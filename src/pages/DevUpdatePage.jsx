@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { TopBar, Btn } from "../components/UI";
 
-const GITHUB_REPO = "ddnemet-star/oiltrade";
+const GITHUB_REPO = "plen-maker/oiltrade";
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_REPO}/releases`;
 const CURRENT_VERSION = "3.0.0";
 
@@ -169,7 +169,7 @@ export default function DevUpdatePage() {
         }}>
           <span style={{ fontSize: 18 }}>📦</span>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text0)" }}>ddnemet-star/oiltrade</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text0)" }}>plen-maker/oiltrade</div>
             <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "var(--font-mono)" }}>github.com/{GITHUB_REPO}</div>
           </div>
           <a href={`https://github.com/${GITHUB_REPO}`} target="_blank" rel="noreferrer" style={{ marginLeft: "auto" }}>
