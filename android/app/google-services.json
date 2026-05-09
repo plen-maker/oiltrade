@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "800520087079",
+    "project_id": "oiltrade-3",
+    "storage_bucket": "oiltrade-3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800520087079:android:654abff0e3c23c365bd002",
+        "android_client_info": {
+          "package_name": "com.oiltrade.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNijRPwCpzoNFYPGmZfvvBSuaHSzAVtcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
