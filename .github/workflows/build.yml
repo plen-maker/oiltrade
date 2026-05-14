@@ -27,6 +27,23 @@ jobs:
       - name: Install TypeScript
         run: npm install -D typescript
 
+      - name: Convert capacitor config
+        run: |
+          cat capacitor.config.ts | node -e "
+            const fs = require('fs');
+            const content = fs.readFileSync('capacitor.config.ts','utf8');
+            const appIdMatch = content.match(/appId:\s*['\"\`](.+?)['\"\`]/);
+            const appNameMatch = content.match(/appName:\s*['\"\`](.+?)['\"\`]/);
+            const webDirMatch = content.match(/webDir:\s*['\"\`](.+?)['\"\`]/);
+            const config = {
+              appId: appIdMatch?.[1] || 'com.oiltrade.app',
+              appName: appNameMatch?.[1] || 'OilTrade',
+              webDir: webDirMatch?.[1] || 'dist'
+            };
+            fs.writeFileSync('capacitor.config.json', JSON.stringify(config, null, 2));
+            console.log('Created capacitor.config.json:', JSON.stringify(config));
+          "
+
       - name: Build web
         run: npm run build
 
