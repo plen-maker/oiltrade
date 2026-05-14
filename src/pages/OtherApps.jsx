@@ -76,6 +76,12 @@ export function AdminApp({ profile, onClose }) {
   const [relSaving, setRelSaving] = useState(false);
   // Settings tab state
   const [settFlight, setSettFlight] = useState(300);
+  const [bcTitle, setBcTitle] = useState("");
+  const [bcBody, setBcBody] = useState("");
+  const [bcTarget, setBcTarget] = useState("all");
+  const [bcTargetUser, setBcTargetUser] = useState("");
+  const [bcSending, setBcSending] = useState(false);
+  const [nfcDelivId, setNfcDelivId] = useState("");
   const [editUserId, setEditUserId] = useState("");
   const [editBalance, setEditBalance] = useState(0);
   const [editRole, setEditRole] = useState("member");
@@ -116,6 +122,52 @@ export function AdminApp({ profile, onClose }) {
   };
 
   const ok = (m) => { setMsg(m); setTimeout(()=>setMsg(""),3000); };
+
+  const sendBroadcast = async () => {
+    if (!bcTitle || !bcBody) { ok("Töltsd ki a címet és az üzenetet!"); return; }
+    setBcSending(true);
+    try {
+      const { addDoc, collection: col2 } = await import("firebase/firestore");
+      if (bcTarget === "all") {
+        // Send to all users via pushQueue
+        for (const u of users) {
+          if (u.id) {
+            await addDoc(col2(db, "messages"), {
+              toId: u.id, fromId: "system", fromName: "📢 OilTrade",
+              text: `${bcTitle} — ${bcBody}`,
+              type: "broadcast", read: false,
+              createdAt: new Date().toISOString(),
+            });
+          }
+        }
+        // OneSignal push to all
+        await addDoc(col2(db, "pushQueue"), {
+          type: "broadcast", title: bcTitle, body: bcBody,
+          createdAt: new Date().toISOString(),
+        });
+        ok(`✓ Elküldve ${users.length} felhasználónak!`);
+      } else if (bcTargetUser) {
+        await addDoc(col2(db, "messages"), {
+          toId: bcTargetUser, fromId: "system", fromName: "📢 OilTrade",
+          text: `${bcTitle} — ${bcBody}`,
+          type: "broadcast", read: false,
+          createdAt: new Date().toISOString(),
+        });
+        ok("✓ Elküldve!");
+      }
+      setBcTitle(""); setBcBody("");
+    } catch(e) { ok("Hiba: " + e.message); }
+    setBcSending(false);
+  };
+
+  const activateNFC = async () => {
+    if (!nfcDelivId) { ok("Add meg a delivery ID-t!"); return; }
+    try {
+      const { doc: doc2, updateDoc: upd2 } = await import("firebase/firestore");
+      await upd2(doc2(db, "deliveries", nfcDelivId), { nfcEnabled: true, state: "a kapu előtt" });
+      ok("✓ NFC aktiválva! A vevő fizethet.");
+    } catch(e) { ok("Hiba: " + e.message); }
+  };
 
   const saveAppConfig = async (key, value) => {
     try {
@@ -199,7 +251,7 @@ export function AdminApp({ profile, onClose }) {
     <div className="win">
       <div className="hdr"><button className="bk" onClick={onClose}>←</button><b>⚙️ Admin Panel</b></div>
       <div className="tabs">
-        {[["users","👥 Tagok"],["serials","🔢 Serialek"],["cards","💳 Kártyák"],["release","🚀 Release"],["settings","⚙️ Beállítások"]].map(([id,l])=>(
+        {[["users","👥 Tagok"],["serials","🔢 Serialek"],["cards","💳 Kártyák"],["broadcast","📢 Üzenet"],["release","🚀 Release"],["settings","⚙️ Beállítások"]].map(([id,l])=>(
           <button key={id} className={`tab${tab===id?" on":""}`} onClick={()=>setTab(id)}>{l}</button>
         ))}
       </div>
@@ -342,6 +394,58 @@ export function AdminApp({ profile, onClose }) {
             <F label="Delivery ID"><input className="inp" value={etaDelivId} onChange={e=>setEtaDelivId(e.target.value)} placeholder="delivery doc ID" style={{ fontFamily:"'JetBrains Mono',monospace" }} /></F>
             <F label="ETA (pl. 2025-05-10 14:30)"><input className="inp" value={etaValue} onChange={e=>setEtaValue(e.target.value)} placeholder="2025-05-10 14:30" /></F>
             <button className="btn full" onClick={saveEta}>ETA mentése</button>
+          </div>
+        </>}
+
+        {tab==="broadcast"&&<>
+          <div style={{ fontSize:12,fontWeight:700,color:"var(--blue)",marginBottom:10 }}>📢 Broadcast üzenet</div>
+          <div className="card" style={{ marginBottom:12 }}>
+            <F label="Cél">
+              <select className="inp" value={bcTarget} onChange={e=>setBcTarget(e.target.value)}>
+                <option value="all">Mindenki</option>
+                <option value="one">Egy felhasználó</option>
+              </select>
+            </F>
+            {bcTarget==="one"&&(
+              <F label="Felhasználó">
+                <select className="inp" value={bcTargetUser} onChange={e=>setBcTargetUser(e.target.value)}>
+                  <option value="">— Válassz —</option>
+                  {users.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}
+                </select>
+              </F>
+            )}
+            <F label="Cím (push értesítés fejléce)">
+              <input className="inp" value={bcTitle} onChange={e=>setBcTitle(e.target.value)}
+                placeholder="☀️ Időjárás Budapesten" />
+            </F>
+            <F label="Üzenet szövege">
+              <textarea className="inp" value={bcBody} onChange={e=>setBcBody(e.target.value)}
+                placeholder="18°C, felhős. Jó szállítást!" style={{ minHeight:80,resize:"vertical" }} />
+            </F>
+            <button className="btn full" onClick={sendBroadcast} disabled={bcSending}>
+              {bcSending?"Küldés...":"📢 Küldés"}
+            </button>
+          </div>
+
+          <div className="card" style={{ marginBottom:12 }}>
+            <div style={{ fontSize:12,fontWeight:700,color:"var(--t2)",marginBottom:8 }}>📱 NFC aktiválás kapunál</div>
+            <div style={{ fontSize:11,color:"var(--t3)",marginBottom:8,lineHeight:1.5 }}>
+              Ha a futár a kapunál van, add meg a delivery ID-t és aktiváld az NFC fizetést.
+            </div>
+            <F label="Delivery ID">
+              <input className="inp" value={nfcDelivId} onChange={e=>setNfcDelivId(e.target.value)}
+                placeholder="delivery doc ID" style={{ fontFamily:"'JetBrains Mono',monospace" }} />
+            </F>
+            <button className="btn full" onClick={activateNFC} style={{ background:"var(--green)" }}>
+              📱 NFC aktiválás + Kapu előtt állapot
+            </button>
+          </div>
+
+          <div style={{ fontSize:11,color:"var(--t3)",padding:"10px 0",lineHeight:1.6 }}>
+            💡 Példa üzenetek:<br/>
+            "☀️ Időjárás" — "18°C, felhős Budapest"<br/>
+            "📦 Szállítás" — "Csomagod 30 percen belül érkezik!"<br/>
+            "⚠️ Rendszer" — "Karbantartás 22:00-23:00"
           </div>
         </>}
 

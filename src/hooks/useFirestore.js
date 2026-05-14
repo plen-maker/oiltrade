@@ -200,18 +200,22 @@ export const useInvoices = (userId) => {
 };
 
 export async function processPayment({ offerId, fromId, fromName, toId, toName, amount, payMethod, product, oilType }) {
-  // 1. Deduct from buyer, add to seller
-  const fromSnap = await getDoc(ref("users", fromId));
-  const toSnap = await getDoc(ref("users", toId));
-  const fromBal = parseFloat(fromSnap.data()?.balance || 0);
-  const toBal = parseFloat(toSnap.data()?.balance || 0);
-  const amt = parseFloat(amount);
-  if (isNaN(amt) || amt <= 0) throw new Error("Érvénytelen összeg");
-  if (fromBal < amt) throw new Error("Nincs elég egyenleg!");
-  const fromBalance = Math.round((fromBal - amt) * 100) / 100;
-  const toBalance = Math.round((toBal + amt) * 100) / 100;
-  await updateDoc(ref("users", fromId), { balance: fromBalance });
-  await updateDoc(ref("users", toId), { balance: toBalance });
+  // 1. Atomic balance update using runTransaction
+  const { runTransaction } = await import("firebase/firestore");
+  let fromBalance, toBalance;
+  await runTransaction(db, async (transaction) => {
+    const fromSnap = await transaction.get(ref("users", fromId));
+    const toSnap = await transaction.get(ref("users", toId));
+    const fromBal = parseFloat(fromSnap.data()?.balance ?? 0);
+    const toBal = parseFloat(toSnap.data()?.balance ?? 0);
+    const amt = parseFloat(amount);
+    if (isNaN(amt) || amt <= 0) throw new Error("Érvénytelen összeg");
+    if (fromBal < amt) throw new Error(`Nincs elég egyenleg! (${fromBal}$ < ${amt}$)`);
+    fromBalance = Math.round((fromBal - amt) * 100) / 100;
+    toBalance = Math.round((toBal + amt) * 100) / 100;
+    transaction.update(ref("users", fromId), { balance: fromBalance });
+    transaction.update(ref("users", toId), { balance: toBalance });
+  });
 
   // 2. Create invoice for both
   const invoiceNum = `TRD-${Date.now().toString().slice(-8)}`;

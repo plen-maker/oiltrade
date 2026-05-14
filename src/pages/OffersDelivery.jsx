@@ -48,6 +48,7 @@ export function OffersApp({ profile, offers, onClose }) {
       setDone(true);
     } catch(e) {
       console.error("accept error:", e);
+      alert("Hiba: " + (e.message || "Ismeretlen hiba"));
     } finally {
       setBusy(false);
     }
@@ -122,9 +123,16 @@ export function OffersApp({ profile, offers, onClose }) {
       {pay==="choose"&&(
         <Modal onClose={()=>setPay(null)} title="Fizetési mód">
           <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-            {[{id:"card",e:"💳",l:"Bankkártya"},{id:"nfc",e:"📱",l:"NFC fizetés"}].map(m=>(
-              <div key={m.id} className="card" style={{ textAlign:"center",padding:20,cursor:"pointer" }}
-                onClick={()=>m.id==="nfc"?setPay("nfc"):setPay("card")}>
+            {[{id:"card",e:"💳",l:"Bankkártya"},{id:"nfc",e:"📱",l:"NFC — Kapunál"}].map(m=>(
+              <div key={m.id} className="card" style={{ textAlign:"center",padding:20,cursor:"pointer",opacity:(m.id==="nfc"&&!sel?.nfcEnabled)?0.4:1,position:"relative" }}
+                onClick={()=>{
+                  if(m.id==="nfc" && !sel?.nfcEnabled) {
+                    alert("NFC fizetés csak a kapunál elérhető - futár aktiválja!");
+
+                    return;
+                  }
+                  m.id==="nfc" ? setPay("nfc") : setPay("card");
+                }}>
                 <div style={{ fontSize:32,marginBottom:8 }}>{m.e}</div>
                 <div style={{ fontWeight:600,fontSize:13 }}>{m.l}</div>
               </div>
@@ -182,15 +190,22 @@ export function DeliveryApp({ profile, deliveries, onClose }) {
       await updateDelivery(d.id,{state:ns});
       // Push notification for state change
       
-      const stateLabels = {"összeszállítás alatt":"🔄 Összeszállítás alatt","a levegőben úton":"✈ A levegőben úton!","a kapu előtt":"📦 Csomag a kapu előtt!"};
-      if (stateLabels[ns]) {
-        await sendPushToUser(d.toId, stateLabels[ns], `"${d.product}" — ${ns}`);
+      const pushMessages = {
+        "összeszállítás alatt": { title:"🔄 Csomag összeszállítás alatt", body:`"${d.product}" — hamarosan indul!` },
+        "a levegőben úton":     { title:"✈️ Csomag úton van!", body:`"${d.product}" — a levegőben, közeleg!` },
+        "a kapu előtt":         { title:"📦 Csomag a kapu előtt!", body:`"${d.product}" — a futár a kapudnál vár!` },
+        "kézbesítve":           { title:"✅ Csomag megérkezett!", body:`"${d.product}" — sikeresen átvéve!` },
+      };
+      if (pushMessages[ns]) {
+        await sendPushToUser(d.toId, pushMessages[ns].title, pushMessages[ns].body);
+        await sendMsg(d.toId,"system","OilTrade 📦",
+          `${pushMessages[ns].title} — ${pushMessages[ns].body}`,
+          "delivery_update"
+        );
       }
       if (ns==="a kapu előtt") {
-        await sendMsg(d.toId,"system","OilTrade",
-          `📦 A csomagod megérkezett! "${d.product}" a kapu előtt van — kérj átvételi kódot!`,
-          "delivery_arrived"
-        );
+        // Seller also gets notified
+        await sendPushToUser(d.fromId, "📦 Csomag kézbesítés alatt", `"${d.product}" — a vevő kapujánál!`);
       }
     }
   };

@@ -179,11 +179,9 @@ function OS() {
               background:"#4ade80", color:"#000", borderRadius:12,
               padding:"13px", fontSize:14, fontWeight:800, textDecoration:"none", marginBottom:10
             }}>⬇ Letöltés — v{updateInfo.version}</a>
-            <button onClick={() => setShowChangelog(false)} style={{
-              display:"block", width:"100%", background:"transparent",
-              border:"1px solid rgba(255,255,255,0.1)", borderRadius:12,
-              padding:"12px", fontSize:13, color:"var(--t2)", cursor:"pointer"
-            }}>Később</button>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.3)", textAlign:"center", marginTop:4 }}>
+              A folytatáshoz frissítsd az appot
+            </div>
           </div>
         </div>
       )}
