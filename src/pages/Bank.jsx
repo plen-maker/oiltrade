@@ -11,6 +11,48 @@ function InvoiceList({ userId }) {
     <div>
       {invoices.map(inv => {
         const isBuyer = inv.buyerId === userId;
+
+        const downloadPDF = () => {
+          const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#111;padding:20px}
+  .header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #4a9eff;padding-bottom:16px;margin-bottom:24px}
+  .logo{font-size:24px;font-weight:900;color:#4a9eff;letter-spacing:.1em}
+  .invoice-num{font-family:monospace;font-size:13px;color:#666}
+  .title{font-size:28px;font-weight:900;margin-bottom:6px}
+  .status{display:inline-block;background:#3ecf7a20;color:#3ecf7a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+  .section{background:#f8fafc;border-radius:10px;padding:16px;margin:16px 0}
+  .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0}
+  .row:last-child{border:none}
+  .label{color:#666;font-size:13px}
+  .value{font-weight:600;font-size:13px}
+  .amount{font-size:36px;font-weight:900;color:${isBuyer?"#e05555":"#3ecf7a"};text-align:center;padding:20px 0}
+  .footer{text-align:center;color:#999;font-size:11px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px}
+</style></head><body>
+<div class="header">
+  <div class="logo">⬡ OILTRADE</div>
+  <div class="invoice-num">${inv.invoiceNumber}</div>
+</div>
+<div class="title">Számla</div>
+<div class="status">✓ Fizetve</div>
+<div class="amount">${isBuyer?"-":"+"}\$${inv.amount}</div>
+<div class="section">
+  <div class="row"><span class="label">Termék</span><span class="value">${inv.product}</span></div>
+  ${inv.oilType?`<div class="row"><span class="label">Olaj típus</span><span class="value">${inv.oilType}</span></div>`:""}
+  <div class="row"><span class="label">Vásárló</span><span class="value">${inv.buyerName}</span></div>
+  <div class="row"><span class="label">Eladó</span><span class="value">${inv.sellerName}</span></div>
+  <div class="row"><span class="label">Fizetési mód</span><span class="value">${inv.payMethod}</span></div>
+  <div class="row"><span class="label">Dátum</span><span class="value">${inv.createdAt?.slice(0,10)}</span></div>
+</div>
+<div class="footer">OilTrade Platform • Automatikusan generált számla • ${new Date().toLocaleDateString("hu-HU")}</div>
+</body></html>`;
+          const blob = new Blob([html], {type:"text/html"});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url; a.download = `${inv.invoiceNumber}.html`;
+          a.click(); URL.revokeObjectURL(url);
+        };
+
         return (
           <div key={inv.id} style={{ background:"var(--bg2)",border:"1px solid var(--b)",borderRadius:14,padding:14,marginBottom:10 }}>
             <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10 }}>
@@ -32,6 +74,9 @@ function InvoiceList({ userId }) {
               <div><div style={{ fontSize:9,color:"var(--t3)",textTransform:"uppercase",marginBottom:2 }}>DÁTUM</div><div style={{ fontSize:11,fontFamily:"'JetBrains Mono',monospace" }}>{inv.createdAt?.slice(0,10)}</div></div>
               <div><div style={{ fontSize:9,color:"var(--t3)",textTransform:"uppercase",marginBottom:2 }}>STÁTUSZ</div><span className="bdg green">Fizetve</span></div>
             </div>
+            <button onClick={downloadPDF} style={{ width:"100%",marginTop:10,background:"var(--blue-d)",border:"1px solid var(--blue)",borderRadius:8,color:"var(--blue)",padding:"8px",fontSize:12,fontWeight:700,cursor:"pointer" }}>
+              ⬇ Számla letöltése (HTML)
+            </button>
           </div>
         );
       })}

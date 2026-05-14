@@ -1,8 +1,7 @@
 export const ADMIN_EMAIL = "ddnemet@gmail.com";
 
 export const LOCATIONS = [
-  "Tarantula Fészek", "Szigete", "Nyauperth",
-  "Codeland", "Catlancd", "Helios Station", "Vortex Base",
+  "Tarantula Fészek Szigete", "Nyauperth", "Catland",
 ];
 
 export const OIL_TYPES = [
@@ -45,17 +44,28 @@ input,select,textarea{outline:none;font-family:'Syne',sans-serif}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--blue)}50%{box-shadow:0 0 20px var(--blue),0 0 40px var(--blue)}}
 @keyframes planefly{0%{left:-8%}100%{left:108%}}
 @keyframes notifIn{from{transform:translateY(-120%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes loadBar{0%{left:-60%;width:60%}100%{left:100%;width:60%}}
 
 .fu{animation:fadeUp .35s cubic-bezier(.22,.68,0,1.2) both}
 .fi{animation:fadeIn .2s ease both}
 .su{animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both}
+.sd{animation:slideDown .3s cubic-bezier(.22,.68,0,1.2) both}
+.sl{animation:slideLeft .3s cubic-bezier(.22,.68,0,1.2) both}
+.si{animation:scaleIn .25s cubic-bezier(.22,.68,0,1.2) both}
 .s1{animation-delay:.05s}.s2{animation-delay:.1s}.s3{animation-delay:.15s}
 .s4{animation-delay:.2s}.s5{animation-delay:.25s}.s6{animation-delay:.3s}
+.s7{animation-delay:.35s}.s8{animation-delay:.4s}
 
 .wrap{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:#030810;position:relative;overflow:hidden}
 .frame{width:390px;height:844px;background:var(--bg);border-radius:44px;border:1px solid #162030;box-shadow:0 0 0 1px #080f1c,0 40px 120px rgba(0,0,0,.9);position:relative;overflow:hidden}
@@ -65,7 +75,7 @@ input,select,textarea{outline:none;font-family:'Syne',sans-serif}
   .wrap{background:#030810}
 }
 
-.win{position:absolute;inset:0;background:var(--bg);overflow:hidden;z-index:50;animation:slideUp .28s cubic-bezier(.22,.68,0,1.2) forwards}
+.win{position:absolute;inset:0;background:var(--bg);overflow:hidden;z-index:50;animation:slideUp .32s cubic-bezier(.16,.84,.44,1) forwards}
 .hdr{background:rgba(4,11,20,.96);backdrop-filter:blur(24px);border-bottom:1px solid var(--b);padding:14px 18px;display:flex;align-items:center;gap:12px;padding-top:max(14px,env(safe-area-inset-top,14px))}
 .bk{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:15px;cursor:pointer;flex-shrink:0}
 .bk:active{opacity:.6}
@@ -87,7 +97,7 @@ select.inp option{background:var(--bg2)}
 .btn.sm{padding:6px 13px;font-size:12px;border-radius:8px}
 .btn.full{width:100%;justify-content:center}
 
-.card{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r2);padding:15px;margin-bottom:10px}
+.card{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r2);padding:15px;margin-bottom:10px;transition:border-color .2s,transform .15s}
 .bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .bdg.blue{background:var(--blue-d);color:var(--blue)}
 .bdg.green{background:var(--green-d);color:var(--green)}

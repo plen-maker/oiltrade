@@ -187,7 +187,9 @@ export function DeliveryApp({ profile, deliveries, onClose }) {
     const i = DELIVERY_STATES.indexOf(d.state);
     if (i<DELIVERY_STATES.length-1) {
       const ns = DELIVERY_STATES[i+1];
-      await updateDelivery(d.id,{state:ns});
+      // Auto-enable NFC when arriving at gate
+      const extra = ns==="a kapu előtt" ? {nfcEnabled:true} : {};
+      await updateDelivery(d.id,{state:ns,...extra});
       // Push notification for state change
       
       const pushMessages = {

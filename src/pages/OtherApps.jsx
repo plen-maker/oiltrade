@@ -497,7 +497,14 @@ export function AdminApp({ profile, onClose }) {
 export function ProfileApp({ profile, onClose, onLogout }) {
   const [name, setName] = useState(profile?.name||"");
   const [saved, setSaved] = useState(false);
-  const save = async () => { await updateUser(profile.id,{name}); setSaved(true); setTimeout(()=>setSaved(false),2000); };
+  const [loc, setLoc] = useState(profile?.location||"Tarantula Fészek Szigete");
+  const save = async () => {
+    await updateUser(profile.id, {name, location: loc});
+    setSaved(true);
+    setTimeout(()=>setSaved(false),2000);
+    // Force reload profile
+    window.location.reload();
+  };
   return (
     <div className="win">
       <div className="hdr"><button className="bk" onClick={onClose}>←</button><b>👤 Profil</b></div>
@@ -511,6 +518,12 @@ export function ProfileApp({ profile, onClose, onLogout }) {
         <div style={{ marginBottom:12 }}>
           <label className="fl">Megjelenített név</label>
           <input className="inp" value={name} onChange={e=>setName(e.target.value)} />
+        </div>
+        <div className="card" style={{ marginBottom:12 }}>
+          <label className="fl">Helyszín</label>
+          <select className="inp" value={loc} onChange={e=>setLoc(e.target.value)}>
+            {["Tarantula Fészek Szigete","Nyauperth","Catland"].map(l=><option key={l}>{l}</option>)}
+          </select>
         </div>
         <div className="card" style={{ marginBottom:14 }}>
           <div style={{ fontSize:11,color:"var(--t3)",marginBottom:6 }}>Jelenlegi helyszín</div>
