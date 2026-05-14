@@ -22,7 +22,9 @@ jobs:
           java-version: 17
 
       - name: Install deps
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install --legacy-peer-deps
+          npm install -D typescript --legacy-peer-deps
 
       - name: Build web
         run: npm run build
