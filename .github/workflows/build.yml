@@ -26,7 +26,13 @@ jobs:
           echo "legacy-peer-deps=true" >> .npmrc
           npm install
           npm install -D typescript
-
+      
+      - name: Set app version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          sed -i "s/__APP_VERSION__/$VERSION/g" src/App.jsx
+          echo "Version set to: $VERSION"
+          
       - name: Build web
         run: npm run build
 
