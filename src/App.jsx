@@ -42,7 +42,7 @@ function NotifBanner({ notif, onDismiss }) {
 
 
 const GITHUB_REPO = "plen-maker/oiltrade";
-const APP_VERSION = "1.1.0"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel!
+const APP_VERSION = "1.4"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel!
 
 function compareVersions(a, b) {
   // true ha b újabb mint a
