@@ -9,6 +9,7 @@ import { BankApp } from "./pages/Bank";
 import { MessagesApp, AdminApp, ProfileApp, BrowserApp } from "./pages/OtherApps";
 import { WebBuilderApp } from "./pages/WebBuilder";
 import { CatTinderApp } from "./pages/CatTinder";
+import { UpdaterApp } from "./pages/Updater";
 import React, { useState, useEffect, useRef } from "react";
 import { initPushNotifications } from "./hooks/usePush";
 import { Spinner } from "./components/UI";
@@ -41,8 +42,26 @@ function NotifBanner({ notif, onDismiss }) {
 }
 
 
+
+// In-app notification sound
+function playNotifSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.setValueAtTime(880, ctx.currentTime);
+    o.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+    o.frequency.setValueAtTime(880, ctx.currentTime + 0.2);
+    g.gain.setValueAtTime(0.3, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime + 0.4);
+  } catch {}
+}
+
 const GITHUB_REPO = "plen-maker/oiltrade";
-const APP_VERSION = "1.4.1"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel
+const APP_VERSION = "__APP_VERSION__"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel!
 
 function compareVersions(a, b) {
   // true ha b újabb mint a
@@ -110,7 +129,7 @@ function OS() {
     if (!messages.length) return;
     messages.forEach(m => {
       if (!prevIds.current.has(m.id)) {
-        if (prevIds.current.size > 0 && !m.read) setNotif(m);
+        if (prevIds.current.size > 0 && !m.read) { setNotif(m); playNotifSound(); }
         prevIds.current.add(m.id);
       }
     });
@@ -143,6 +162,7 @@ function OS() {
       case "oiltrade-browser": return <BrowserApp onClose={close} initMode="oiltrade" />;
       case "builder":  return <WebBuilderApp profile={profile} onClose={close} />;
       case "cattinder": return <CatTinderApp onClose={close} />;
+      case "updater":   return <UpdaterApp onClose={close} />;
       default: return null;
     }
   };
