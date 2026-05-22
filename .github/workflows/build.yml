@@ -20,23 +20,43 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-mac:
+  build-mac-intel:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build DMG Intel
+        run: |
+          pip3 install pyinstaller
+          pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Intel" webeditor.py
+          mkdir dmg_tmp
+          cp -r "dist/OilTrade-WebEditor-Intel.app" dmg_tmp/
+          hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Intel.dmg
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/OilTrade-WebEditor-Intel.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-mac-silicon:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Build DMG
+      - name: Build DMG Silicon
         run: |
           pip3 install pyinstaller
-          pyinstaller --onefile --windowed --name "OilTrade-WebEditor" webeditor.py
+          pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Silicon" webeditor.py
           mkdir dmg_tmp
-          cp -r "dist/OilTrade-WebEditor.app" dmg_tmp/
-          hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor.dmg
+          cp -r "dist/OilTrade-WebEditor-Silicon.app" dmg_tmp/
+          hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Silicon.dmg
       - uses: softprops/action-gh-release@v2
         with:
-          files: dist/OilTrade-WebEditor.dmg
+          files: dist/OilTrade-WebEditor-Silicon.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,13 +79,19 @@ jobs:
       - name: Set version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
+          RELEASE_NAME="${{ github.event.release.name }}"
           sed -i "s/__APP_VERSION__/$VERSION/g" src/App.jsx
       - run: npm run build
       - run: npx cap sync android
       - run: chmod +x android/gradlew
-      - run: cd android && ./gradlew assembleDebug
+      - name: Build Release APK
+        run: cd android && ./gradlew assembleRelease
+      - name: Rename APK
+        run: |
+          RELEASE_NAME="${{ github.event.release.name }}"
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk "android/app/build/outputs/apk/release/${RELEASE_NAME}.apk"
       - uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+          files: android/app/build/outputs/apk/release/${{ github.event.release.name }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
