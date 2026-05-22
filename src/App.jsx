@@ -171,42 +171,7 @@ function OS() {
 
   return (
     <>
-      {updateInfo && showChangelog && (
-        <div style={{
-          position:"absolute", inset:0, zIndex:700,
-          background:"rgba(4,11,20,0.96)", backdropFilter:"blur(16px)",
-          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-          padding:24,
-        }}>
-          <div style={{ width:"100%", maxWidth:340 }}>
-            <div style={{ textAlign:"center", marginBottom:20 }}>
-              <div style={{ fontSize:48, marginBottom:8 }}>🚀</div>
-              <div style={{ fontSize:11, color:"#4ade80", fontWeight:700, letterSpacing:".1em", marginBottom:4 }}>ÚJ VERZIÓ ELÉRHETŐ</div>
-              <div style={{ fontSize:22, fontWeight:900, color:"#fff" }}>v{updateInfo.version}</div>
-            </div>
-            {updateInfo.notes ? (
-              <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:14, padding:16, marginBottom:20, maxHeight:220, overflowY:"auto" }}>
-                <div style={{ fontSize:12, color:"var(--t2)", fontWeight:700, marginBottom:10, letterSpacing:".06em" }}>MI VÁLTOZOTT</div>
-                {updateInfo.notes.split("\n").filter(l=>l.trim()).map((line,i)=>(
-                  <div key={i} style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginBottom:6, lineHeight:1.5 }}>{line}</div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:14, padding:16, marginBottom:20, textAlign:"center", color:"var(--t3)", fontSize:13 }}>
-                Nincs részletes leírás ehhez a verzióhoz.
-              </div>
-            )}
-            <a href={updateInfo.url} target="_blank" rel="noreferrer" style={{
-              display:"block", textAlign:"center",
-              background:"#4ade80", color:"#000", borderRadius:12,
-              padding:"13px", fontSize:14, fontWeight:800, textDecoration:"none", marginBottom:10
-            }}>⬇ Letöltés — v{updateInfo.version}</a>
-            <div style={{ fontSize:11, color:"rgba(255,255,255,0.3)", textAlign:"center", marginTop:4 }}>
-              A folytatáshoz frissítsd az appot
-            </div>
-          </div>
-        </div>
-      )}
+
       {notif && <NotifBanner notif={notif} onDismiss={() => setNotif(null)} />}
       {locked && <LockScreen onUnlock={() => setLocked(false)} pendingOffers={pendingOffers} />}
       <HomeScreen profile={profile} pendingOffers={pendingOffers} activeDeliveries={activeDeliveries} unreadMsgs={unreadMsgs} onOpenApp={setApp} />
