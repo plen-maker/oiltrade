@@ -79,7 +79,7 @@ jobs:
       - name: Set version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          sed -i "s/__APP_VERSION__/$VERSION/g" src/App.jsx
+          sed -i "s|__APP_VERSION__|$VERSION|g" src/App.jsx
       - run: npm run build
       - run: npx cap sync android
       - run: chmod +x android/gradlew
