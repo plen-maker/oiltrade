@@ -62,7 +62,7 @@ function playNotifSound() {
 }
 
 const GITHUB_REPO = "plen-maker/oiltrade";
-const APP_VERSION = "__APP_VERSION__"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel!
+const APP_VERSION = "1.8.1"; // ezt növeld minden release-nél — egyezzen a GitHub tag-gel!
 
 function compareVersions(a, b) {
   // true ha b újabb mint a
