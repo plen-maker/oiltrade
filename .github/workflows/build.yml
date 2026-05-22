@@ -1,4 +1,5 @@
 name: Build All
+name: Build All
 
 on:
   release:
@@ -20,24 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-mac-intel:
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip3 install pyinstaller
-      - run: pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Intel" webeditor.py
-      - run: mkdir dmg_tmp && cp -r dist/OilTrade-WebEditor-Intel.app dmg_tmp/
-      - run: hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Intel.dmg
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: dist/OilTrade-WebEditor-Intel.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-mac-silicon:
+  build-mac:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,12 +29,12 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip3 install pyinstaller
-      - run: pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Silicon" webeditor.py
-      - run: mkdir dmg_tmp && cp -r dist/OilTrade-WebEditor-Silicon.app dmg_tmp/
-      - run: hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Silicon.dmg
+      - run: pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Mac" webeditor.py
+      - run: mkdir dmg_tmp && cp -r dist/OilTrade-WebEditor-Mac.app dmg_tmp/
+      - run: hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Mac.dmg
       - uses: softprops/action-gh-release@v2
         with:
-          files: dist/OilTrade-WebEditor-Silicon.dmg
+          files: dist/OilTrade-WebEditor-Mac.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
