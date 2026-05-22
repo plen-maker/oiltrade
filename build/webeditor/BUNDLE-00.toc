@@ -1,0 +1,1 @@
+([('webeditor', '/Users/ddnemet/oiltrade/dist/webeditor', 'EXECUTABLE')],)
