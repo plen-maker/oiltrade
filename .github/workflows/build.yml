@@ -79,18 +79,24 @@ jobs:
       - name: Set version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
-          sed -i "s@__APP_VERSION__@$VERSION|g" src/App.jsx
+          python3 -c "
+import re, sys
+with open('src/App.jsx','r') as f: c=f.read()
+c=re.sub(r'__APP_VERSION__','${VERSION}',c)
+with open('src/App.jsx','w') as f: f.write(c)
+print('Version set to: ${VERSION}')
+"
       - run: npm run build
       - run: npx cap sync android
       - run: chmod +x android/gradlew
-      - name: Build APK
-        run: cd android && ./gradlew assembleDebug
+      - run: cd android && ./gradlew assembleDebug
       - name: Rename APK
         run: |
-          RNAME="${{ github.event.release.name }}"
+          RNAME=$(echo "${{ github.event.release.name }}" | tr ' ' '-')
           cp android/app/build/outputs/apk/debug/app-debug.apk "android/app/build/outputs/apk/debug/${RNAME}.apk"
+          echo "APK_FILE=android/app/build/outputs/apk/debug/${RNAME}.apk" >> $GITHUB_ENV
       - uses: softprops/action-gh-release@v2
         with:
-          files: android/app/build/outputs/apk/debug/${{ github.event.release.name }}.apk
+          files: ${{ env.APK_FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
