@@ -72,21 +72,11 @@ jobs:
           echo "legacy-peer-deps=true" >> .npmrc
           npm install
           npm install -D typescript
-      - name: Set version
-        run: |
-          TAG="${GITHUB_REF##*/}"
-          VERSION="${TAG#v}"
-          python3 -c "
-content = open('src/App.jsx').read()
-content = content.replace('__APP_VERSION__', '$VERSION')
-open('src/App.jsx', 'w').write(content)
-print('Done:', '$VERSION')
-"
       - run: npm run build
       - run: npx cap sync android
       - run: chmod +x android/gradlew
       - run: cd android && ./gradlew assembleDebug
-      - name: Rename and upload APK
+      - name: Rename APK
         run: |
           SAFE=$(echo "$RELEASE_NAME" | tr ' ' '-')
           cp android/app/build/outputs/apk/debug/app-debug.apk "${SAFE}.apk"
