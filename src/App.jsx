@@ -11,6 +11,8 @@ import { WebBuilderApp } from "./pages/WebBuilder";
 import { CatTinderApp } from "./pages/CatTinder";
 import { UpdaterApp } from "./pages/Updater";
 import { AIWebEditorApp } from "./pages/AIWebEditor";
+import { CatMailApp } from "./pages/CatMail";
+import { CatPayApp } from "./pages/CatPay";
 import React, { useState, useEffect, useRef } from "react";
 import { initPushNotifications } from "./hooks/usePush";
 import { Spinner } from "./components/UI";
@@ -165,6 +167,8 @@ function OS() {
       case "cattinder": return <CatTinderApp onClose={close} />;
       case "updater":     return <UpdaterApp onClose={close} />;
       case "aiwebeditor": return <AIWebEditorApp onClose={close} />;
+      case "catmail":    return <CatMailApp onClose={close} profile={profile} />;
+      case "catpay":     return <CatPayApp onClose={close} profile={profile} />;
       default: return null;
     }
   };

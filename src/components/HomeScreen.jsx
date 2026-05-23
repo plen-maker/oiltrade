@@ -83,6 +83,8 @@ const APPS = [
   { id:"admin",    e:"⚙️", l:"Admin",      bg:"#280a0a,#160505", admin:true },
   { id:"cattinder", e:"🐱", l:"Cat Tinder",  bg:"#2a1a0a,#160a05" },
   { id:"updater",   e:"⬆️", l:"Frissítés",   bg:"#0a2a1a,#05160a" },
+  { id:"catmail",   e:"📧", l:"CatMail",    bg:"#0a1a3a,#06101e" },
+  { id:"catpay",    e:"🐾", l:"CatPay",     bg:"#1a0a28,#0d0516" },
 ];
 
 const DOCK = ["trade","offers","bank","profile"];
