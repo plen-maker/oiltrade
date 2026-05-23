@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { useProfile } from "../hooks/useAuth";
+
 
 const GOOGLE_PAY_CONFIG = {
   environment: "TEST",
