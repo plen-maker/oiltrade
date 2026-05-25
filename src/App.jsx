@@ -10,6 +10,8 @@ import { MessagesApp, AdminApp, ProfileApp, BrowserApp } from "./pages/OtherApps
 import { WebBuilderApp } from "./pages/WebBuilder";
 import { CatTinderApp } from "./pages/CatTinder";
 import { UpdaterApp } from "./pages/Updater";
+import { CatMailApp } from "./pages/CatMail";
+import { CatPayApp } from "./pages/CatPay";
 import { AIWebEditorApp } from "./pages/AIWebEditor";
 import React, { useState, useEffect, useRef } from "react";
 import { initPushNotifications } from "./hooks/usePush";
@@ -163,6 +165,8 @@ function OS() {
       case "oiltrade-browser": return <BrowserApp onClose={close} initMode="oiltrade" />;
       case "builder":  return <WebBuilderApp profile={profile} onClose={close} />;
       case "cattinder": return <CatTinderApp onClose={close} />;
+      case "catmail":   return <CatMailApp onClose={close} profile={profile} />;
+      case "catpay":    return <CatPayApp onClose={close} profile={profile} />;
       case "updater":     return <UpdaterApp onClose={close} />;
       case "aiwebeditor": return <AIWebEditorApp onClose={close} />;
       default: return null;
