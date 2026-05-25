@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
+import { collection, query, where, orderBy, limit, onSnapshot, addDoc } from "firebase/firestore";
 
 
 const GOOGLE_PAY_CONFIG = {
@@ -33,7 +34,7 @@ export function CatPayApp({ onClose, profile }) {
 
   useEffect(() => {
     if (!profile?.id) return;
-    const unsub = db.collection("transactions")
+    const unsub = collection(db, "transactions")
       .where("userId", "==", profile.id)
       .orderBy("createdAt", "desc")
       .limit(20)
@@ -43,7 +44,7 @@ export function CatPayApp({ onClose, profile }) {
       }, () => setLoading(false));
 
     // Load saved cards
-    db.collection("cards").where("userId", "==", profile.id).get().then(snap => {
+    collection(db, "cards").where("userId", "==", profile.id).get().then(snap => {
       setCards(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     });
 
@@ -96,7 +97,7 @@ export function CatPayApp({ onClose, profile }) {
 
   const saveTransaction = async (amount, note, method, cardInfo) => {
     const txId = "TX-" + Date.now();
-    await db.collection("transactions").add({
+    await collection(db, "transactions").add({
       txId, userId: profile?.id,
       amount: parseFloat(amount),
       note, method, cardInfo,
@@ -104,7 +105,7 @@ export function CatPayApp({ onClose, profile }) {
       createdAt: new Date(),
     });
     // Add to emailQueue
-    await db.collection("emailQueue").add({
+    await collection(db, "emailQueue").add({
       to: profile?.email || "",
       subject: `CatPay tranzakció: $${amount}`,
       orderId: txId,

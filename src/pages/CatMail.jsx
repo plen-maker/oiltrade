@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
+import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
 
 const GMAIL_CLIENT_ID = "851289814310-8rtgnue15cr0d7364vqln7iabijtqnlj.apps.googleusercontent.com";
 const GMAIL_SCOPES = "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send";
@@ -19,13 +20,11 @@ export function CatMailApp({ onClose, profile }) {
 
   useEffect(() => {
     // Load notifications from Firestore
-    const unsub = db.collection("emailQueue")
-      .where("sent", "==", false)
-      .orderBy("createdAt", "desc")
-      .limit(10)
-      .onSnapshot(snap => {
-        setNotifications(snap.docs.map(d => ({id: d.id, ...d.data()})));
-      }, () => {});
+    const unsub = const q = query(collection(db,"emailQueue"), where("sent","==",false), orderBy("createdAt","desc"), limit(10));
+    const unsub2 = onSnapshot(q, snap=>{
+      setNotifications(snap.docs.map(d=>({id:d.id,...d.data()})));
+    }, ()=>{});
+    return unsub2;
     return () => unsub();
   }, []);
 

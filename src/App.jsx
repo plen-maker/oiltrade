@@ -167,8 +167,8 @@ function OS() {
       case "cattinder": return <CatTinderApp onClose={close} />;
       case "updater":     return <UpdaterApp onClose={close} />;
       case "aiwebeditor": return <AIWebEditorApp onClose={close} />;
-      case "catmail":    return <CatMailApp onClose={close} profile={profile} />;
-      case "catpay":     return <CatPayApp onClose={close} profile={profile} />;
+      case "catmail":    return <CatMailApp onClose={close} profile={profile} key="catmail" />;
+      case "catpay":     return <CatPayApp onClose={close} profile={profile} key="catpay" />;
       default: return null;
     }
   };
