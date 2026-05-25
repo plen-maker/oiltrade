@@ -11,10 +11,15 @@ export function CatPayApp({ onClose, profile }) {
   const [processing, setProcessing] = useState(false);
   const [selectedCard, setSelectedCard] = useState(0);
 
-  const CARDS = [];
+
 
   useEffect(() => {
     if (!profile?.id) { setLoading(false); return; }
+    // Load cards from Firestore
+    const unsubCards = onSnapshot(
+      query(collection(db, "cards"), where("userId", "==", profile.id)),
+      snap => setCards(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+    );
     const q = query(
       collection(db, "transactions"),
       where("userId", "==", profile.id),
@@ -25,7 +30,7 @@ export function CatPayApp({ onClose, profile }) {
       setTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       setLoading(false);
     }, () => setLoading(false));
-    return () => unsub();
+    return () => { unsub(); unsubCards(); };
   }, [profile?.id]);
 
   const pay = async (method) => {
