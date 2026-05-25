@@ -20,7 +20,7 @@ export function CatMailApp({ onClose, profile }) {
 
   useEffect(() => {
     // Load notifications from Firestore
-    const unsub = const q = query(collection(db,"emailQueue"), where("sent","==",false), orderBy("createdAt","desc"), limit(10));
+    const q = query(collection(db,"emailQueue"), where("sent","==",false), orderBy("createdAt","desc"), limit(10));
     const unsub2 = onSnapshot(q, snap=>{
       setNotifications(snap.docs.map(d=>({id:d.id,...d.data()})));
     }, ()=>{});
