@@ -20,24 +20,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-mac-intel:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: pip3 install pyinstaller
-      - run: pyinstaller --onefile --windowed --name "OilTrade-WebEditor-Intel" webeditor.py
-      - run: mkdir dmg_tmp && cp -r dist/OilTrade-WebEditor-Intel.app dmg_tmp/
-      - run: hdiutil create -volname "OilTrade WebEditor" -srcfolder dmg_tmp -ov -format UDZO dist/OilTrade-WebEditor-Intel.dmg
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: dist/OilTrade-WebEditor-Intel.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-mac-silicon:
+  build-mac:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,6 +60,9 @@ jobs:
       - run: chmod +x android/gradlew
       - run: cd android && ./gradlew assembleDebug
       - name: Rename APK
-        run: |
-          SAFE=$(echo "$RELEASE_NAME" | tr ' ' '-')
-          cp android/app/build/outputs/apk/debug/app-debug.apk "${SAFE}.apk"
+        run: mv android/app/build/outputs/apk/debug/app-debug.apk "OilTrade.apk"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: OilTrade.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
