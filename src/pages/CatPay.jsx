@@ -11,10 +11,7 @@ export function CatPayApp({ onClose, profile }) {
   const [processing, setProcessing] = useState(false);
   const [selectedCard, setSelectedCard] = useState(0);
 
-  const CARDS = [
-    { num:"•••• •••• •••• 4242", type:"VISA", exp:"12/27", color:"linear-gradient(135deg,#1a0a28,#312e81)" },
-    { num:"•••• •••• •••• 8888", type:"Mastercard", exp:"09/26", color:"linear-gradient(135deg,#0a1a28,#1a3a28)" },
-  ];
+  const CARDS = [];
 
   useEffect(() => {
     if (!profile?.id) { setLoading(false); return; }
