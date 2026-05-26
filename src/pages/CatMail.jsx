@@ -16,11 +16,16 @@ export function CatMailApp({ onClose, profile }) {
     if (!profile?.id) return;
     const q = query(
       collection(db, "catmail"),
-      where("toId", "==", profile.id),
-      orderBy("createdAt", "desc")
+      where("toId", "==", profile.id)
     );
     const unsub = onSnapshot(q, snap => {
-      setEmails(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      docs.sort((a, b) => {
+        const da = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+        const db = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+        return db - da;
+      });
+      setEmails(docs);
     });
     return () => unsub();
   }, [profile?.id]);
@@ -126,6 +131,44 @@ export function CatMailApp({ onClose, profile }) {
                 <span style={{fontWeight:600}}>{v}</span>
               </div>
             ))}
+            <button onClick={() => {
+              const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+  body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#111;padding:20px;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
+  .header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #f59e0b;padding-bottom:16px;margin-bottom:24px}
+  .logo{font-size:24px;font-weight:900;color:#f59e0b;letter-spacing:.1em}
+  .invoice-num{font-family:monospace;font-size:13px;color:#666}
+  .title{font-size:28px;font-weight:900;margin-bottom:6px}
+  .status{display:inline-block;background:#22c55e20;color:#22c55e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+  .section{background:#f8fafc;border-radius:10px;padding:16px;margin:16px 0}
+  .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e2e8f0}
+  .row:last-child{border:none}
+  .label{color:#666;font-size:13px}
+  .value{font-weight:600;font-size:13px}
+  .footer{text-align:center;color:#999;font-size:11px;margin-top:30px;border-top:1px solid #e2e8f0;padding-top:16px}
+</style></head><body>
+<div class="header">
+  <div class="logo">⬡ OILTRADE SHOP</div>
+  <div class="invoice-num">${selected.invoiceData["Tranzakció ID"] || selected.invoiceData["Számlaszám"] || "INV-12345"}</div>
+</div>
+<div class="title">Digitális Nyugta / Számla</div>
+<div class="status">✓ Sikeres Tranzakció</div>
+<div class="section">
+  ${Object.entries(selected.invoiceData).map(([k,v]) => `<div class="row"><span class="label">${k}</span><span class="value">${v}</span></div>`).join('')}
+</div>
+<div class="footer">OilTrade WebShop • Automatikusan generált számla • ${new Date().toLocaleDateString("hu-HU")}</div>
+</body></html>`;
+              const blob = new Blob([html], {type:"text/html"});
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url; a.download = `Szamla-${selected.invoiceData["Tranzakció ID"] || "Nyugta"}.html`;
+              a.click(); URL.revokeObjectURL(url);
+            }} style={{
+              width:"100%",marginTop:12,background:"rgba(245,158,11,.15)",border:"1px solid var(--accent)",
+              borderRadius:8,color:"var(--accent)",padding:"10px",fontSize:12,fontWeight:700,cursor:pointer
+            }}>
+              ⬇ Nyugta Letöltése (Digital PDF Receipt)
+            </button>
           </div>
         )}
 
