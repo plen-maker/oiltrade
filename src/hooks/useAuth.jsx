@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import { auth } from "../firebase";
 import { getOrCreateUser } from "./useFirestore";
 import { ADMIN_EMAIL } from "../data/constants";
@@ -24,10 +24,20 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (email, pw) => signInWithEmailAndPassword(auth, email, pw);
+  const loginWithGoogle = async () => {
+    try {
+      const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
+      const result = await GoogleAuth.signIn();
+      const credential = GoogleAuthProvider.credential(result.authentication.idToken);
+      return signInWithCredential(auth, credential);
+    } catch(e) {
+      throw new Error("Google bejelentkezés sikertelen: " + e.message);
+    }
+  };
   const logout = () => signOut(auth);
   const patchProfile = (d) => setProfile(p => ({ ...p, ...d }));
 
-  return <Ctx.Provider value={{ profile, loading, login, logout, patchProfile }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ profile, loading, login, loginWithGoogle, logout, patchProfile }}>{children}</Ctx.Provider>;
 }
 
 export const useAuth = () => useContext(Ctx);
