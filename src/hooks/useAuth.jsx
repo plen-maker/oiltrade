@@ -27,10 +27,19 @@ export function AuthProvider({ children }) {
   const loginWithGoogle = async () => {
     try {
       const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
+      // Initialize if needed
+      await GoogleAuth.initialize({
+        clientId: "851289814310-lkbao0feve2hmi438hvitock9r62a4pu.apps.googleusercontent.com",
+        scopes: ["profile", "email"],
+        grantOfflineAccess: true,
+      }).catch(() => {}); // ignore if already initialized
       const result = await GoogleAuth.signIn();
-      const credential = GoogleAuthProvider.credential(result.authentication.idToken);
+      const idToken = result.authentication?.idToken || result.idToken;
+      if (!idToken) throw new Error("Nem sikerült az ID token lekérése");
+      const credential = GoogleAuthProvider.credential(idToken);
       return signInWithCredential(auth, credential);
     } catch(e) {
+      if (e.message && e.message.includes("12501")) throw new Error("Bejelentkezés megszakítva.");
       throw new Error("Google bejelentkezés sikertelen: " + e.message);
     }
   };
