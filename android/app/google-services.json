@@ -12,7 +12,20 @@
           "package_name": "com.oiltrade.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "800520087079-6oj0ib6cctb9r6j2sdkr0msph33lsbe0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oiltrade.app",
+            "certificate_hash": "0c86636c1c8c72e07a568685d5e6508c66e48986"
+          }
+        },
+        {
+          "client_id": "800520087079-no0o8r275adck74aijd5tisjhfg9osrh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBNijRPwCpzoNFYPGmZfvvBSuaHSzAVtcU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "800520087079-no0o8r275adck74aijd5tisjhfg9osrh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
