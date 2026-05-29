@@ -542,8 +542,8 @@ export function ProfileApp({ profile, onClose, onLogout }) {
 // ─── BROWSER ──────────────────────────────────────────────────────────────────
 export function BrowserApp({ onClose, initMode="internet" }) {
   const [mode, setMode] = React.useState(initMode); // "internet" | "oiltrade"
-  const [url, setUrl] = React.useState("https://www.google.com");
-  const [input, setInput] = React.useState("https://www.google.com");
+  const [url, setUrl] = React.useState("https://oiltrade-3.web.app");
+  const [input, setInput] = React.useState("https://oiltrade-3.web.app");
   const [loading, setLoading] = React.useState(false);
   const [history, setHistory] = React.useState(["https://www.google.com"]);
   const [histIdx, setHistIdx] = React.useState(0);
@@ -657,6 +657,22 @@ export function BrowserApp({ onClose, initMode="internet" }) {
           color: mode==="oiltrade" ? "#000" : "var(--t2)",
         }}>⬡ OilTrade Oldalak</button>
       </div>
+
+        {/* Quick links */}
+        <div style={{ display:"flex", gap:8, padding:"6px 14px 0", overflowX:"auto" }}>
+          {[
+            { label:"⬡ OilTrade", url:"https://oiltrade-3.web.app", color:"#6366f1" },
+            { label:"🛒 KormShop", url:"https://oiltrade-korm.web.app", color:"#f97316" },
+          ].map(link => (
+            <button key={link.url} onClick={() => { setInput(link.url); navigate(link.url); }}
+              style={{ padding:"5px 12px", borderRadius:20, fontSize:11, fontWeight:700,
+                background:`${link.color}20`, border:`1px solid ${link.color}40`,
+                color:link.color, cursor:"pointer", whiteSpace:"nowrap", flexShrink:0,
+                fontFamily:"Inter,sans-serif" }}>
+              {link.label}
+            </button>
+          ))}
+        </div>
 
       {/* Internet bookmarks */}
       {mode==="internet" && (
