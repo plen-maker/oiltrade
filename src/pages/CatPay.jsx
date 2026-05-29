@@ -104,7 +104,7 @@ export function CatPayApp({ onClose, profile }) {
             amount: req.amount, currency: "USD",
             note: req.note || req.siteName,
             method: "CatPay", status: "completed",
-            ...(req.orderId ? {orderId: req.orderId} : {}),
+            orderId: req.orderId,
             createdAt: serverTimestamp(),
           });
           // Notify the website via Firestore
@@ -193,8 +193,8 @@ export function CatPayApp({ onClose, profile }) {
                 {/* Balance card */}
                 <div style={{background:"linear-gradient(135deg,#1a0a28,#0a0516)",border:"1px solid rgba(99,102,241,.3)",borderRadius:16,padding:22,marginBottom:14,position:"relative",overflow:"hidden"}}>
                   <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#6366f1,transparent)"}}/>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,.5)",fontWeight:700,letterSpacing:".1em",marginBottom:6}}>EGYENLEG</div>
-                  <div style={{fontSize:34,fontWeight:900,color:"#fff"}}>${fmt(profile?.balance||catpayProfile?.balance||0)}</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,.5)",fontWeight:700,letterSpacing:".1em",marginBottom:6}}>CATPAY EGYENLEG</div>
+                  <div style={{fontSize:34,fontWeight:900,color:"#fff"}}>${fmt(catpayProfile?.balance||0)}</div>
                   <div style={{fontSize:12,color:"rgba(255,255,255,.4)",marginTop:4}}>USD</div>
                 </div>
 
