@@ -9,8 +9,11 @@
       "showSpinner": false
     },
     "GoogleAuth": {
-      "scopes": ["profile", "email"],
-      "serverClientId": "851289814310-lkbao0feve2hmi438hvitock9r62a4pu.apps.googleusercontent.com",
+      "scopes": [
+        "profile",
+        "email"
+      ],
+      "serverClientId": "800520087079-no0o8r275adck74aijd5tisjhfg9osrh.apps.googleusercontent.com",
       "forceCodeForRefreshToken": true
     }
   }

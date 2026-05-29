@@ -85,6 +85,7 @@ const APPS = [
   { id:"updater",   e:"⬆️", l:"Frissítés",   bg:"#0a2a1a,#05160a" },
   { id:"catmail",   e:"📧", l:"CatMail",    bg:"#0a1a3a,#06101e" },
   { id:"catpay",    e:"🐾", l:"CatPay",     bg:"#1a0a28,#0d0516" },
+  { id:"kormshop",  e:"🛒", l:"KormShop",   bg:"#1a0e00,#0d0700" },
 ];
 
 const DOCK = ["trade","offers","bank","profile"];
